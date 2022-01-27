@@ -1,0 +1,213 @@
+version: "3"
+
+services:
+  recipes-svc:
+    image: "recipes-svc:dev"
+    container_name: recipes-svc
+    build:
+      context: "./backend/recipes"
+    networks:
+      - "backend"
+      - "recipesdomain"
+    expose:
+      - "3003"
+    depends_on:
+      - "auth-svc"
+      - "user-svc"
+    environment:
+      NODE_ENV: "test"
+      PORT: "3003"
+      DB_TYPE: "postgres"
+      POSTGRES_HOST: "recipes-db"
+      POSTGRES_DB: "recipes-microservice"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_PORT: "5433"
+  
+  user-svc:
+    image: "user-svc:dev"
+    container_name: user-svc
+    build:
+      context: "./backend/user"
+    networks:
+      - "backend"
+      - "userdomain"
+    expose:
+      - "3001"
+    depends_on:
+      - "auth-svc"
+    environment:
+      NODE_ENV: "test"
+      PORT: "3001"
+      DB_TYPE: "postgres"
+      POSTGRES_HOST: "user-db"
+      POSTGRES_DB: "user-microservice"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_PORT: "5434"
+
+  auth-svc:
+    image: "auth-svc:dev"
+    container_name: auth-svc
+    build:
+      context: "./backend/auth"
+    networks:
+      - "backend"
+    expose:
+      - "3002"
+    environment:
+      NODE_ENV: "test"
+      PORT: "3002"
+
+  api-gateway:
+    image: "api-gateway:dev"
+    container_name: api-gateway
+    build:
+      context: "./backend/api-gateway"
+    networks:
+      - "frontend"
+      - "backend"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - "user-svc"
+      - "auth-svc"
+      - "recipes-svc"
+    environment:
+      NODE_ENV: "test"
+      PORT: "3000"
+    healthcheck:
+      test: ["CMD", "wget", "localhost:3000/healthz -q -O - > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 1
+
+  user-db:
+    image: "postgres"
+    container_name: user-db
+    networks:
+      - "userdomain"
+    expose:
+      - "5434"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB : "user-microservice"
+    command: "-p 5434"
+    healthcheck:
+      test: ["CMD-SHELL", "su -c 'pg_isready -U postgres' postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 1
+
+  recipes-db:
+    image: "postgres"
+    container_name: recipes-db
+    networks:
+      - "recipesdomain"
+    expose:
+      - "5433"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB : "recipes-microservice"
+    command: "-p 5433"
+    healthcheck:
+      test: ["CMD-SHELL", "su -c 'pg_isready -U postgres' postgres"]
+      interval: 30s
+      timeout: 30s
+      retries: 1
+
+
+
+  container-micro:
+    image: "container-micro:dev"
+    container_name: container-micro
+    build:
+      context: "./frontend/federation-demo-container"
+    networks:
+      - "frontend"
+      - "backend"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - "auth-micro"
+      - "recipes-micro"
+      - "about-micro"
+      - "api-gateway"
+    environment:
+      NODE_ENV: "test"
+      URL: "127.0.0.1"
+      PORT: "4000"
+    healthcheck:
+      test: ["CMD", "wget", "localhost:4000/healthz -q -O - > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 1
+    
+  auth-micro:
+    image: "auth-micro:dev"
+    container_name: auth-micro
+    build:
+      context: "./frontend/federation-demo-auth"
+    networks:
+      - "frontend"
+      - "backend"
+    ports:
+      - "4003:4003"
+    environment:
+      NODE_ENV: "test"
+      URL: "127.0.0.1"
+      PORT: "4003"
+    healthcheck:
+      test: ["CMD", "wget", "localhost:4003/healthz -q -O - > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 1
+  
+  recipes-micro:
+    image: "recipes-micro:dev"
+    container_name: recipes-micro
+    build:
+      context: "./frontend/federation-demo-recipes"
+    networks:
+      - "frontend"
+      - "backend"
+    ports:
+      - "4001:4001"
+    environment:
+      NODE_ENV: "test"
+      URL: "127.0.0.1"
+      PORT: "4001"
+    healthcheck:
+      test: ["CMD", "wget", "localhost:4001/healthz -q -O - > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 1
+
+  about-micro:
+    image: "about-micro:dev"
+    container_name: about-micro
+    build:
+      context: "./frontend/federation-demo-about"
+    networks:
+      - "frontend"
+      - "backend"
+    ports:
+      - "4002:4002"
+    environment:
+      NODE_ENV: "test"
+      URL: "127.0.0.1"
+      PORT: "4002"
+    healthcheck:
+      test: ["CMD", "wget", "localhost:4002/healthz -q -O - > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 1
+
+
+networks:
+  frontend:
+  backend:
+  userdomain:
+  recipesdomain:

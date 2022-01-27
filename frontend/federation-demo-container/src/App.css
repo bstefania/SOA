@@ -1,0 +1,163 @@
+body {
+  background-color: white;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+}
+
+/* home */
+
+.home-header {
+  width: 100%;
+}
+
+.home-carousel {
+  width: 50%;
+  height: 90%;
+  margin-top: 30px;
+}
+
+.caption-fade {
+  background: rgb(255,255,255,0.5);
+  color: black;
+}
+
+#home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/* auth */
+
+#logout-button {
+  display: flex;
+  height: 40px;
+}
+
+#logout-link {
+  display: contents;
+}
+
+.link-sign-up {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* recipes */
+
+
+.recipes-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  align-items: center;
+}
+
+.recipes {
+  width: 90%;
+  display: flex;
+  margin: 10px;
+}
+
+.recipes-header {
+  width: 100%;
+}
+
+.recipe-button {
+  width: 100%;
+}
+
+.recipe-name {
+  padding-top: 8px;
+}
+
+
+.recipe-col {
+  /* height: 400px;
+  min-height: 500px; */
+}
+
+.recipe-card-divider {
+  margin-top: 15px;
+  margin-bottom: 15px
+}
+
+.recipe-short-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre-line;
+}
+
+
+/* add recipe */
+
+.add-recipe-container {
+  width: 60%;
+  padding: 50px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  display: inline-block
+}
+
+.recipe-form {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  row-gap: 15px;
+
+}
+
+.recipe-upload {
+  width: 150px;
+  align-self: center;
+}
+
+.my-recipes {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-new-recipe-button {
+  width: 150px;
+  align-self: end;
+  margin-right: 100px;
+}
+
+.collapsible {
+  display: none;
+  transition: display 0.5s linear;
+}
+
+.collapsible.active {
+  display: flex;
+  transition: display 0.5s linear;
+}
+
+.recipe-description {
+  align-self: center;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+  padding: 40px;
+  align-items: inherit;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  min-height: 600px;
+}
+
+.description-div {
+  white-space: pre-line;
+  padding: 20px;
+}
+
+.recipe-image {
+  width: 500px;
+}
